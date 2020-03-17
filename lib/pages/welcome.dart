@@ -1,15 +1,86 @@
-import 'package:Doorstepx/pages/Register.dart';
-import 'package:Doorstepx/pages/login.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+final usersRef = Firestore.instance.collection('users');
+String name = 'Dear ',
+    url = 'https://image.flaticon.com/icons/svg/1077/1077012.svg';
+
+final List<Widget> items = [
+  FurnitureCategoryItem(
+      imagepath: './assets/images/Electrician.png',
+      type: 'Electrician',
+      onTap: () => {}),
+  FurnitureCategoryItem(
+      imagepath: './assets/images/Doctor.png', type: 'Doctor', onTap: () => {}),
+  FurnitureCategoryItem(
+      imagepath: './assets/images/Gardener.png',
+      type: 'Gardener',
+      onTap: () => {}),
+  FurnitureCategoryItem(
+      imagepath: './assets/images/HouseCleaning.png',
+      type: 'House\nCleaning',
+      onTap: () => {}),
+  FurnitureCategoryItem(
+      imagepath: './assets/images/Movers.png',
+      type: 'Packers & \nMovers',
+      onTap: () => {}),
+  FurnitureCategoryItem(
+      imagepath: './assets/images/plumber.png',
+      type: 'plumber',
+      onTap: () => {}),
+  FurnitureCategoryItem(
+      imagepath: './assets/images/Veterian.png',
+      type: 'Veterian',
+      onTap: () => {}),
+  FurnitureCategoryItem(
+      imagepath: './assets/images/maintenance.png',
+      type: 'maintenance',
+      onTap: () => {}),
+  FurnitureCategoryItem(
+      imagepath: './assets/images/massage.png',
+      type: 'Massage',
+      onTap: () => {}),
+  FurnitureCategoryItem(
+      imagepath: './assets/images/petcare.png',
+      type: 'Petcare',
+      onTap: () => {}),
+  FurnitureCategoryItem(
+      imagepath: './assets/images/babysitting.png',
+      type: 'Babysitting',
+      onTap: () => {}),
+  FurnitureCategoryItem(
+      imagepath: './assets/images/Others.png', type: 'Others', onTap: () => {}),
+];
+
 class WelcomeScreen extends StatefulWidget {
-  WelcomeScreen({Key key}) : super(key: key);
+  final FirebaseUser user;
+  WelcomeScreen({Key key, this.user}) : super(key: key);
 
   @override
   _WelcomeScreenState createState() => _WelcomeScreenState();
 }
 
 class _WelcomeScreenState extends State<WelcomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    getNameandUrl();
+    setState(() {
+      print(widget.user.uid);
+    });
+  }
+
+  getNameandUrl() async {
+    DocumentSnapshot doc = await usersRef.document(widget.user.uid).get();
+    String s = doc['name'];
+    String mediaUrl = doc['imageUrl'];
+    setState(() {
+      name = s;
+      url = mediaUrl;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
@@ -29,7 +100,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Text(
-              "Hello, Raj",
+              "Hello, " + name,
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
@@ -49,36 +120,36 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
         Container(
           width: 60,
           alignment: Alignment.centerLeft,
-          child: Stack(
-            children: <Widget>[
-              Container(
-                width: 45,
-                height: 45,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.white,
-                ),
-                child: Icon(
-                  Icons.notifications_none,
-                  color: Colors.black87,
-                  size: 28,
-                ),
-              ),
-              Positioned(
-                top: 0,
-                right: 2,
-                child: Container(
-                  width: 12,
-                  height: 12,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.red,
-                    border: Border.all(color: Colors.white),
-                  ),
-                ),
-              ),
-            ],
-          ),
+          child: ClipRRect(child: Container(
+            height :50,width: 50 ,color : Colors.white,
+            child: Image.network(url),
+          ),borderRadius: BorderRadius.circular(25),),
+          // child: Stack(
+          //   children: <Widget>[
+          //     Container(
+          //       width: 45,
+          //       height: 45,
+          //       decoration: BoxDecoration(
+          //         shape: BoxShape.circle,
+          //         color: Colors.white,
+          //       ),
+          //       child: Image.network(url),
+          //     ),
+          //     Positioned(
+          //       top: 0,
+          //       right: 2,
+          //       child: Container(
+          //         width: 12,
+          //         height: 12,
+          //         decoration: BoxDecoration(
+          //           shape: BoxShape.circle,
+          //           color: Colors.red,
+          //           border: Border.all(color: Colors.white),
+          //         ),
+          //       ),
+          //     ),
+          //   ],
+          // ),
         ),
       ],
     );
@@ -88,7 +159,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     return Container(
       height: height,
       width: width,
-      color: Colors.white,
+      color: Color.fromRGBO(6, 38, 54, 1),
       child: Stack(
         children: <Widget>[
           Positioned(
@@ -100,16 +171,16 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  stops: [0.1, 0.3, 0.5, 0.7],
+                  stops: [0.2, 0.5, 0.7, 0.9],
                   colors: [
-                    Colors.blue[800],
-                    Colors.blue[700],
-                    Colors.blue[600],
-                    Colors.blue[400],
+                    Colors.deepPurple[900],
+                    Colors.deepPurple[700],
+                    Colors.deepPurple[400],
+                    Colors.deepPurple[200],
                   ],
                 ),
               ),
-              padding: EdgeInsets.only(left: 20),
+              padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
               child: SafeArea(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -153,91 +224,55 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             ),
           ),
           _buildCategoriesSection(height, width),
-          _buildContent(height, width),
         ],
       ),
     );
   }
 
-  Widget _buildContent(height, width) {
-    return Positioned(
-      top: (height * .35) + 50,
-      width: width,
-      height: height - (height * .35) + 50,
-      child: LayoutBuilder(
-        builder: (BuildContext c, BoxConstraints constraints) {
-          final List<Widget> items = [];
+  // Widget _buildContent(height, width) {
+  //   return Positioned(
+  //     top: (height * .35) + 50,
+  //     width: width,
+  //     height: height - (height * .35) + 50,
+  //     child: LayoutBuilder(
+  //       builder: (BuildContext c, BoxConstraints constraints) {
+  //         final List<Widget> items = [];
 
-          items.add(SizedBox(
-            height: constraints.maxHeight / 3,
-          ));
+  //         items.add(SizedBox(
+  //           height: constraints.maxHeight / 3,
+  //         ));
 
-          return ListView(
-            padding: EdgeInsets.only(left: 20),
-            children: items,
-          );
-        },
-      ),
-    );
-  }
+  //         return ListView(
+  //           padding: EdgeInsets.only(left: 20),
+  //           children: items,
+  //         );
+  //       },
+  //     ),
+  //   );
+  //}
 
   Widget _buildCategoriesSection(height, width) {
     return Positioned(
       width: width,
-      height: 100,
+      height: height,
       top: (height * .35) - 45,
-      child: ListView(
-        padding: EdgeInsets.only(left: 20),
-        scrollDirection: Axis.horizontal,
-        children: <Widget>[
-          FurnitureCategoryItem(
-            icon: Icons.directions_bike,
-            type: 'Electrician',
-            onTap: ()=>Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => Register())),
-          ),
-          FurnitureCategoryItem(
-            icon: Icons.directions_bike,
-            type: 'Doctor',
-            onTap: ()=>Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => Login())),
-          ),
-          FurnitureCategoryItem(
-            icon: Icons.directions_bike,
-            type: 'House Cleaning',
-          ),
-          FurnitureCategoryItem(
-            icon: Icons.directions_bike,
-            type: 'Gardener',
-          ),
-          FurnitureCategoryItem(
-            icon: Icons.directions_bike,
-            type: 'BabySitter',
-          ),
-          FurnitureCategoryItem(
-            icon: Icons.directions_bike,
-            type: 'Plumber',
-          ),
-          FurnitureCategoryItem(
-            icon: Icons.directions_bike,
-            type: 'Packers \nand Movers',
-          ),
-        ],
+      child: GridView(
+        padding: EdgeInsets.fromLTRB(20, 0, 20, 50),
+        scrollDirection: Axis.vertical,
+        gridDelegate:
+            SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
+        children: items,
       ),
     );
   }
 }
 
 class FurnitureCategoryItem extends StatelessWidget {
-  final IconData icon;
+  final String imagepath;
   final String type;
   final Function onTap;
 
-  const FurnitureCategoryItem({Key key, this.icon, this.type, this.onTap})
+  const FurnitureCategoryItem({Key key, this.imagepath, this.type, this.onTap})
       : super(key: key);
 
   @override
@@ -245,8 +280,8 @@ class FurnitureCategoryItem extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
       child: Container(
-        height: 110,
-        width: 90,
+        height: 100,
+        width: 100,
         child: Container(
           width: 90,
           height: 110,
@@ -254,7 +289,6 @@ class FurnitureCategoryItem extends StatelessWidget {
             border: Border.all(width: 0.7),
             borderRadius: BorderRadius.all(Radius.circular(7.0)),
           ),
-          //child: Image.asset('./assets/images/faucet.png')
           child: InkWell(
             onTap: () {
               onTap();
@@ -268,9 +302,10 @@ class FurnitureCategoryItem extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  Icon(
-                    icon,
-                    size: 40,
+                  Image.asset(
+                    imagepath,
+                    height: 50,
+                    width: 50,
                   ),
                   Text(
                     type,

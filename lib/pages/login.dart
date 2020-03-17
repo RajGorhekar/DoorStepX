@@ -1,5 +1,7 @@
-import 'package:Doorstepx/pages/Register.dart';
+import 'dart:async';
+import 'package:Doorstepx/pages/Register.dart'; 
 import 'package:Doorstepx/pages/home.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simple_animations/simple_animations.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -14,6 +16,11 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
@@ -34,7 +41,7 @@ class _LoginState extends State<Login> {
                       height: 300,
                       width: width,
                       child: FadeAnimation(
-                          1,
+                          01,
                           Container(
                             decoration: BoxDecoration(
                                 image: DecorationImage(
@@ -43,23 +50,30 @@ class _LoginState extends State<Login> {
                                     fit: BoxFit.fill)),
                           )),
                     ),
-                    Positioned(
-                      height: 300,
-                      width: width + 20,
-                      child: FadeAnimation(
-                          1.3,
-                          GestureDetector(
-                            onTap: () => FocusScope.of(context)
-                                .requestFocus(new FocusNode()),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  image: DecorationImage(
-                                      image: AssetImage(
-                                          'assets/images/background-2.png'),
-                                      fit: BoxFit.fill)),
+                    FadeAnimation(
+                      1,
+                      Column(children: <Widget>[
+                        Padding(
+                            padding: EdgeInsets.fromLTRB(50, 20, 50, 2),
+                            child: Image.asset(
+                              './assets/images/icon.png',
+                              height: 50,
+                              width: 50,
+                            )),
+                        Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Text(
+                            "Get All Services\nAt Your DoorStep                                                                      ",
+                            style: TextStyle(
+                              color: Colors.deepPurple[900],
+                              fontSize: 25,
                             ),
-                          )),
-                    )
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                        
+                      ]),
+                    ),
                   ],
                 ),
               ),
@@ -129,12 +143,15 @@ class _LoginState extends State<Login> {
                     ),
                     FadeAnimation(
                         1.7,
-                        Center(
-                            child: Text(
-                          "Forgot Password?",
-                          style: TextStyle(
-                              color: Color.fromRGBO(196, 135, 198, 1)),
-                        ))),
+                        GestureDetector(
+                          onTap: () => resetPassword(emailController.text),
+                          child: Center(
+                              child: Text(
+                            "Forgot Password?",
+                            style: TextStyle(
+                                color: Color.fromRGBO(196, 135, 198, 1)),
+                          )),
+                        )),
                     SizedBox(
                       height: 30,
                     ),
@@ -161,10 +178,10 @@ class _LoginState extends State<Login> {
                       height: 30,
                     ),
                     FadeAnimation(
-                        2,
-                        Center(
-                            child: GestureDetector(
-                          onTap: () => Navigator.push(
+                      2,
+                      Center(
+                        child: GestureDetector(
+                          onTap: () => Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => Register())),
@@ -173,7 +190,9 @@ class _LoginState extends State<Login> {
                             style: TextStyle(
                                 color: Color.fromRGBO(49, 39, 79, .6)),
                           ),
-                        ))),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               )
@@ -215,6 +234,7 @@ class FadeAnimation extends StatelessWidget {
   }
 }
 
+
 void login(context) async {
   if (passwordController.text.isEmpty || emailController.text.isEmpty) {
     _scaffoldKey1.currentState.showSnackBar(SnackBar(
@@ -227,9 +247,17 @@ void login(context) async {
       FirebaseUser user = await FirebaseAuth.instance
           .signInWithEmailAndPassword(
               email: emailController.text, password: passwordController.text);
-      Navigator.push(context, MaterialPageRoute(builder: (context) => Home()));
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setBool('boolValue', true);
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Home(user: user,)));
     } catch (e) {
       print(e);
     }
   }
+}
+
+@override
+Future<void> resetPassword(String email) async {
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  await _firebaseAuth.sendPasswordResetEmail(email: email);
 }
